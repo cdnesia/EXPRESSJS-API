@@ -1,7 +1,7 @@
 services:
-  api:
+  expressjs-api:
     build: .
-    container_name: expressjs-api
+    container_name: EXPRESSJS-API
     restart: unless-stopped
     env_file:
       - .env
