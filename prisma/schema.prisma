@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id               Int      @id @default(autoincrement())
+  name             String   @db.VarChar(100)
+  clientId         String   @unique @map("client_id") @db.VarChar(64)
+  clientSecretHash String   @map("client_secret_hash")
+  // Comma-separated scope strings, e.g. "telegram:send-message,tagihan:read".
+  // Empty by default — an admin grants scopes manually (Prisma Studio / DB)
+  // after registration, since registration itself is a public, rate-limited
+  // endpoint and must never let a client hand itself access.
+  scopes           String   @default("") @db.VarChar(1000)
+  // jti of the one refresh token currently valid for this client. Refresh
+  // tokens are stateless JWTs, so this is what makes "used once, then dead"
+  // possible: refresh() only accepts a token whose jti matches this value,
+  // then immediately overwrites it with the new token's jti (rotation) —
+  // the old token can never be replayed after that, and a mismatch (e.g. a
+  // stolen/replayed old token) is rejected outright.
+  currentRefreshJti String?  @map("current_refresh_jti") @db.VarChar(36)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("clients")
+}
+
+// One row per HTTP request (success and failure alike), across all routes.
+// clientId is stored unrelated (no FK) on purpose — a log must never fail
+// to write, or be blocked from writing, because of the referenced client's
+// lifecycle (e.g. deletion).
+model RequestLog {
+  id             Int      @id @default(autoincrement())
+  method         String   @db.VarChar(10)
+  url            String   @db.VarChar(255)
+  statusCode     Int      @map("status_code")
+  message        String?  @db.Text
+  clientId       Int?     @map("client_id")
+  ip             String?  @db.VarChar(45)
+  responseTimeMs Float    @map("response_time_ms")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([clientId])
+  @@index([createdAt])
+  @@map("request_logs")
+}

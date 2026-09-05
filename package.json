@@ -1,0 +1,44 @@
+{
+  "name": "restfull-api-expressjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "manage-client": "node scripts/manage-client.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@inquirer/prompts": "^8.7.1",
+    "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
+    "boxen": "^5.1.2",
+    "chalk": "^4.1.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.12.0",
+    "mysql2": "^3.24.3",
+    "puppeteer": "^25.10.0",
+    "string-width": "^4.2.3",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.3"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.2"
+  }
+}
