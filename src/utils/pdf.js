@@ -32,7 +32,7 @@ async function renderHtmlToPdf(html, pdfOptions = {}) {
     return await page.pdf({
       format: 'a4',
       printBackground: true,
-      margin: { top: '1cm', bottom: '1.5cm', left: '1.5cm', right: '1.5cm' },
+      margin: { top: '1cm', bottom: '1cm', left: '1.5cm', right: '1.5cm' },
       ...pdfOptions,
     });
   } finally {
