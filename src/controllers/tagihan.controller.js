@@ -68,7 +68,7 @@ const createTagihanSppSchema = z
 const cekTagihanSchema = z
   .object({
     npm: z.array(z.string().trim().min(1)).min(1, 'npm minimal 1 item'),
-    tahunAkademik: tahunAkademikSchema,
+    tahunAkademik: z.array(tahunAkademikSchema).min(1, 'tahunAkademik minimal 1 item'),
     jenisTagihan: z.enum(JENIS_TAGIHAN).optional(),
   })
   .strict();
