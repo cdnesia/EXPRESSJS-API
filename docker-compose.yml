@@ -9,6 +9,7 @@ services:
       NODE_ENV: production
     networks:
       - proxy
+      - database
     labels:
       - traefik.enable=true
       - traefik.docker.network=proxy
@@ -27,4 +28,7 @@ services:
 
 networks:
   proxy:
+    external: true
+  database:
+    name: mariadb_database
     external: true
