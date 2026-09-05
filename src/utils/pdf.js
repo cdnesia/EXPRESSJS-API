@@ -1,32 +1,10 @@
-const env = require('../config/env');
+const puppeteer = require('puppeteer');
 
 let browserPromise = null;
 
-// Production: puppeteer-core + Chromium statis dari @sparticuz/chromium —
-// binary-nya sudah bawa hampir semua shared library-nya sendiri, jadi
-// server tidak perlu apt/yum install libnspr4, libnss3, dkk.
-// Lokal/dev: puppeteer biasa (bundled Chromium) supaya tidak perlu setup
-// apa-apa di mesin developer.
-async function launchBrowser() {
-  if (env.nodeEnv === 'production') {
-    // Paket ESM-only — lewat require(), API sebenarnya ada di .default.
-    const chromium = require('@sparticuz/chromium').default;
-    const puppeteer = require('puppeteer-core');
-
-    return puppeteer.launch({
-      headless: true,
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
-    });
-  }
-
-  const puppeteer = require('puppeteer');
-  return puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-}
-
 function getBrowser() {
   if (!browserPromise) {
-    browserPromise = launchBrowser();
+    browserPromise = puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   }
   return browserPromise;
 }
