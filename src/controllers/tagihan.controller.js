@@ -5,6 +5,11 @@ const ApiResponse = require('../utils/ApiResponse');
 
 const JENIS_TAGIHAN = ['SPP', 'KKN', 'SIDANG TUGAS AKHIR', 'SEMINAR PROPOSAL', 'PKL', 'PMB'];
 
+const jenisTagihanSchema = z.preprocess(
+  (value) => (typeof value === 'string' ? value.trim().toUpperCase() : value),
+  z.enum(JENIS_TAGIHAN)
+);
+
 const detailItemSchema = z
   .object({
     nominal: z.union([z.string(), z.number()]),
@@ -33,7 +38,7 @@ const createTagihanSchema = z
     waktuBerakhir: waktuBerakhirSchema,
     detailTagihan: z.array(detailItemSchema).min(1, 'detailTagihan minimal 1 item'),
     detailPotongan: z.array(detailItemSchema).optional(),
-    jenisTagihan: z.enum(JENIS_TAGIHAN).optional(),
+    jenisTagihan: jenisTagihanSchema.optional(),
     khs: z.number().int().optional(),
   })
   .strict();
@@ -46,7 +51,7 @@ const updateTagihanSchema = z
     detailTagihan: z.array(detailItemSchema).min(1, 'detailTagihan minimal 1 item').optional(),
     detailPotongan: z.array(detailItemSchema).optional(),
     nominalDitagih: z.union([z.string(), z.number()]).optional(),
-    jenisTagihan: z.enum(JENIS_TAGIHAN).optional(),
+    jenisTagihan: jenisTagihanSchema.optional(),
     khs: z.number().int().optional(),
     statusAktif: z.enum(['Y', 'T']).optional(),
   })
@@ -69,7 +74,7 @@ const cekTagihanSchema = z
   .object({
     npm: z.array(z.string().trim().min(1)).min(1, 'npm minimal 1 item'),
     tahunAkademik: z.array(tahunAkademikSchema).min(1, 'tahunAkademik minimal 1 item'),
-    jenisTagihan: z.enum(JENIS_TAGIHAN).optional(),
+    jenisTagihan: jenisTagihanSchema.optional(),
   })
   .strict();
 
