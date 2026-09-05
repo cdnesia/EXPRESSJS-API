@@ -248,8 +248,13 @@ async function createTagihanSpp({ npm, tahunAkademik }) {
 async function cekTagihan({ npm, tahunAkademik, jenisTagihan }) {
   const pool = getPool('PAYMENT');
 
-  const conditions = ['npm IN (?)', 'tahun_akademik IN (?)', 'deleted_at IS NULL'];
-  const params = [npm, tahunAkademik];
+  const conditions = ['npm IN (?)', 'deleted_at IS NULL'];
+  const params = [npm];
+
+  if (tahunAkademik) {
+    conditions.push('tahun_akademik IN (?)');
+    params.push(tahunAkademik);
+  }
 
   if (jenisTagihan) {
     conditions.push('jenis_tagihan = ?');
