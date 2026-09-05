@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    container_name: expressjs-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${PORT:-3000}:3000"
