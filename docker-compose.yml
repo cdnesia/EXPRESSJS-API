@@ -1,11 +1,30 @@
 services:
   expressjs-api:
     build: .
-    container_name: EXPRESSJS-API
+    container_name: expressjs-api
     restart: unless-stopped
     env_file:
       - .env
     environment:
       NODE_ENV: production
-    ports:
-      - "${PORT:-3000}:3000"
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+
+      # Ganti api.domain-kamu.com dengan domain asli sebelum deploy.
+      - traefik.http.routers.expressjs-api.rule=Host(`api.umjambi.ac.id`)
+      - traefik.http.routers.expressjs-api.entrypoints=websecure
+      - traefik.http.routers.expressjs-api.tls.certresolver=letsencrypt
+      - traefik.http.services.expressjs-api.loadbalancer.server.port=3000
+
+      # Redirect http -> https, biar tidak ada yang akses versi plain http.
+      - traefik.http.routers.expressjs-api-http.rule=Host(`api.umjambi.ac.id`)
+      - traefik.http.routers.expressjs-api-http.entrypoints=web
+      - traefik.http.routers.expressjs-api-http.middlewares=expressjs-api-https-redirect
+      - traefik.http.middlewares.expressjs-api-https-redirect.redirectscheme.scheme=https
+
+networks:
+  proxy:
+    external: true
