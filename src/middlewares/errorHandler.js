@@ -14,6 +14,9 @@ function errorHandler(err, req, res, next) {
 
   if (!err.isOperational) {
     console.error(err);
+    // Client only gets the generic message above, but request_logs must
+    // keep the real error (message + stack) so a 500 is diagnosable later.
+    res.locals.logMessage = err.stack || err.message;
   }
 
   ApiResponse.error(res, {

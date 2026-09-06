@@ -23,7 +23,12 @@ const app = express();
 app.use((req, res, next) => {
   const originalJson = res.json.bind(res);
   res.json = (body) => {
-    res.locals.logMessage = body && (body.error || body.message);
+    // errorHandler pre-fills this with the real error (stack incl.) for a
+    // 500 before calling res.json, so the client-facing generic message
+    // doesn't overwrite it here — the log must keep the actual cause.
+    if (res.locals.logMessage === undefined) {
+      res.locals.logMessage = body && (body.error || body.message);
+    }
     return originalJson(body);
   };
   next();
