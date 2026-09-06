@@ -41,11 +41,6 @@ model RequestLog {
   statusCode     Int      @map("status_code")
   message        String?  @db.Text
   clientId       Int?     @map("client_id")
-  host           String?  @db.VarChar(255)
-  // Halaman/aplikasi client yang memanggil API ini (header Referer, atau
-  // Origin kalau Referer tidak dikirim) — bukan endpoint API-nya sendiri
-  // (itu di `host`+`url`), tapi sumber pemanggilnya, mis. "umjambi.ac.id/tagihan/cek".
-  referer        String?  @db.Text
   ip             String?  @db.VarChar(45)
   responseTimeMs Float    @map("response_time_ms")
   createdAt      DateTime @default(now()) @map("created_at")

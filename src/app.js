@@ -14,8 +14,8 @@ const app = express();
 // Traefik is the only thing that can reach this container (see
 // docker-compose.yml — no port is published directly, only routed through
 // the `proxy` network), so it's exactly one hop away: trusting it here is
-// what makes req.ip / req.hostname resolve to the real client IP/host from
-// X-Forwarded-For / X-Forwarded-Host instead of Traefik's own address.
+// what makes req.ip resolve to the real client IP from X-Forwarded-For
+// instead of Traefik's own address.
 app.set('trust proxy', 1);
 
 // These three must run before anything that can reject a request (CORS,

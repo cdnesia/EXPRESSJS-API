@@ -5,6 +5,7 @@ const telegramRoutes = require('./telegram.routes');
 const pegawaiRoutes = require('./pegawai.routes');
 const bipotRoutes = require('./bipot.routes');
 const khsRoutes = require('./khs.routes');
+const ruanganRoutes = require('./ruangan.routes');
 const prisma = require('../config/prisma');
 const { getPool, registeredDatabaseNames } = require('../config/db');
 const ApiResponse = require('../utils/ApiResponse');
@@ -42,5 +43,6 @@ router.use('/telegram', telegramRoutes);
 router.use('/pegawai', pegawaiRoutes);
 router.use('/bipot', bipotRoutes);
 router.use('/khs', khsRoutes);
+router.use('/ruangan', ruanganRoutes);
 
 module.exports = router;

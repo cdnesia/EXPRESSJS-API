@@ -16,10 +16,8 @@ function requestLogger(req, res, next) {
           statusCode: res.statusCode,
           message: res.locals.logMessage || null,
           clientId: req.clientId ?? null,
-          // req.hostname / req.ip resolve to the real client host/IP (not
-          // Traefik's) because `trust proxy` is set in app.js.
-          host: req.hostname,
-          referer: req.get('referer') || req.get('origin') || null,
+          // req.ip resolves to the real client IP (not Traefik's) because
+          // `trust proxy` is set in app.js.
           ip: req.ip,
           responseTimeMs: Date.now() - startedAt,
         },
