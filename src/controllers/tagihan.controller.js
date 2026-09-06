@@ -39,7 +39,6 @@ const createTagihanSchema = z
     detailTagihan: z.array(detailItemSchema).min(1, 'detailTagihan minimal 1 item'),
     detailPotongan: z.array(detailItemSchema).optional(),
     jenisTagihan: jenisTagihanSchema.optional(),
-    khs: z.number().int().optional(),
   })
   .strict();
 
@@ -52,7 +51,6 @@ const updateTagihanSchema = z
     detailPotongan: z.array(detailItemSchema).optional(),
     nominalDitagih: z.union([z.string(), z.number()]).optional(),
     jenisTagihan: jenisTagihanSchema.optional(),
-    khs: z.number().int().optional(),
     statusAktif: z.enum(['Y', 'T']).optional(),
   })
   .strict();

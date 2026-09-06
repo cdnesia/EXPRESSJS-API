@@ -78,8 +78,8 @@ async function createTagihan(data) {
       kode_program_studi, nama_program_studi, id_kelas_perkuliahan, nama_kelas_perkuliahan,
       tahun_akademik, waktu_berakhir, detail_tagihan, total_tagihan,
       detail_potongan, total_potongan, nominal_ditagih, nominal_terbayar,
-      jenis_tagihan, status_aktif, khs
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      jenis_tagihan, status_aktif
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       idRecordTagihan,
       nomorTagihan,
@@ -100,7 +100,6 @@ async function createTagihan(data) {
       '0.00',
       jenisTagihan,
       'Y',
-      data.khs ?? 0,
     ]
   );
 
@@ -145,7 +144,6 @@ async function updateTagihan(idRecordTagihan, npm, data) {
   const detailPotongan = data.detailPotongan !== undefined ? data.detailPotongan : existing.detail_potongan;
   const waktuBerakhir = data.waktuBerakhir ? new Date(data.waktuBerakhir) : existing.waktu_berakhir;
   const jenisTagihan = data.jenisTagihan ?? existing.jenis_tagihan;
-  const khs = data.khs ?? existing.khs;
   const statusAktif = data.statusAktif ?? existing.status_aktif;
 
   if (jenisTagihan !== existing.jenis_tagihan) {
@@ -181,7 +179,7 @@ async function updateTagihan(idRecordTagihan, npm, data) {
     `UPDATE tagihan SET
       waktu_berakhir = ?, detail_tagihan = ?, total_tagihan = ?,
       detail_potongan = ?, total_potongan = ?, nominal_ditagih = ?,
-      jenis_tagihan = ?, status_aktif = ?, khs = ?
+      jenis_tagihan = ?, status_aktif = ?
      WHERE id_record_tagihan = ?`,
     [
       waktuBerakhir,
@@ -192,7 +190,6 @@ async function updateTagihan(idRecordTagihan, npm, data) {
       nominalDitagih.toFixed(2),
       jenisTagihan,
       statusAktif,
-      khs,
       idRecordTagihan,
     ]
   );
