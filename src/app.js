@@ -11,6 +11,13 @@ const AppError = require('./utils/AppError');
 
 const app = express();
 
+// Traefik is the only thing that can reach this container (see
+// docker-compose.yml — no port is published directly, only routed through
+// the `proxy` network), so it's exactly one hop away: trusting it here is
+// what makes req.ip / req.hostname resolve to the real client IP/host from
+// X-Forwarded-For / X-Forwarded-Host instead of Traefik's own address.
+app.set('trust proxy', 1);
+
 // These three must run before anything that can reject a request (CORS,
 // Content-Type check, JSON parsing) — otherwise an early rejection would
 // skip straight to the error handler via next(err) and bypass logging
