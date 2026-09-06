@@ -28,17 +28,25 @@ for net in proxy mariadb_database; do
   fi
 done
 
+echo "Membersihkan container/image/volume lama milik project ini..."
+# Scoped ke service di docker-compose.yml ini saja (--rmi local: hanya image
+# hasil build sendiri, bukan base image dari registry; --volumes: volume
+# anonim/punya compose ini). Tidak menyentuh container lain di server yang
+# sama pakai network `proxy`/`mariadb_database` yang di-share. `|| true`
+# karena run pertama kali belum ada apa-apa untuk dibersihkan.
+$COMPOSE down --rmi local --volumes --remove-orphans || true
+
 echo "Build & start container..."
-# --force-recreate: pastikan container selalu dibuat ulang dari image baru,
-# tidak cuma dilanjutkan/di-reuse — penting karena base image Dockerfile
-# pakai tag `latest`, jadi Compose tidak selalu mendeteksi ada perubahan.
-$COMPOSE up -d --build --force-recreate
+$COMPOSE up -d --build
 
 echo "Menunggu container siap..."
 sleep 3
 
 echo "Menjalankan migrasi Prisma (migrate deploy)..."
 $COMPOSE exec -T "$SERVICE" npx prisma migrate deploy
+
+echo "Membersihkan dangling image sisa build lama..."
+docker image prune -f
 
 echo
 echo "Selesai. Status container:"
