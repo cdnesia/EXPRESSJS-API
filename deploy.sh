@@ -14,6 +14,14 @@ cd "$(dirname "$0")"
 COMPOSE="docker compose"
 SERVICE="expressjs-api"
 
+echo "Menarik update terbaru dari git..."
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Ada perubahan lokal yang belum di-commit di server ini. Commit/stash dulu, baru jalankan ulang ./deploy.sh:"
+  git status --short
+  exit 1
+fi
+git pull
+
 if [ ! -f .env ]; then
   echo "File .env tidak ditemukan. Menyalin dari .env.example..."
   cp .env.example .env
