@@ -37,6 +37,17 @@ function sumNominal(items) {
   return (items || []).reduce((sum, item) => sum + Number(item.nominal), 0);
 }
 
+// Payload dari client pakai camelCase (idBipot, namaBipot), tapi JSON yang
+// disimpan ke detail_tagihan/detail_potongan harus snake_case (id_bipot,
+// nama_bipot) supaya konsisten dengan penamaan kolom lain di tabel ini.
+function toSnakeCaseDetail(items) {
+  return (items || []).map(({ idBipot, namaBipot, nominal }) => ({
+    id_bipot: idBipot,
+    nama_bipot: namaBipot,
+    nominal,
+  }));
+}
+
 async function assertNotDuplicate(pool, { npm, tahunAkademik, jenisTagihan }) {
   const [rows] = await pool.query(
     `SELECT id FROM tagihan
@@ -92,9 +103,9 @@ async function createTagihan(data) {
       mahasiswa.namaKelasPerkuliahan || null,
       data.tahunAkademik,
       new Date(data.waktuBerakhir),
-      JSON.stringify(data.detailTagihan),
+      JSON.stringify(toSnakeCaseDetail(data.detailTagihan)),
       totalTagihan.toFixed(2),
-      data.detailPotongan ? JSON.stringify(data.detailPotongan) : null,
+      data.detailPotongan ? JSON.stringify(toSnakeCaseDetail(data.detailPotongan)) : null,
       totalPotongan.toFixed(2),
       nominalDitagih.toFixed(2),
       '0.00',
@@ -175,6 +186,14 @@ async function updateTagihan(idRecordTagihan, npm, data) {
     );
   }
 
+  // Kalau client kirim detail baru, key-nya masih camelCase (idBipot,
+  // namaBipot) dan harus dikonversi ke snake_case sebelum disimpan; kalau
+  // tidak, dipakai apa adanya dari existing (sudah snake_case di DB).
+  const detailTagihanToStore =
+    data.detailTagihan !== undefined ? toSnakeCaseDetail(data.detailTagihan) : existing.detail_tagihan;
+  const detailPotonganToStore =
+    data.detailPotongan !== undefined ? toSnakeCaseDetail(data.detailPotongan) : existing.detail_potongan;
+
   await pool.execute(
     `UPDATE tagihan SET
       waktu_berakhir = ?, detail_tagihan = ?, total_tagihan = ?,
@@ -183,9 +202,9 @@ async function updateTagihan(idRecordTagihan, npm, data) {
      WHERE id_record_tagihan = ?`,
     [
       waktuBerakhir,
-      JSON.stringify(detailTagihan),
+      JSON.stringify(detailTagihanToStore),
       totalTagihan.toFixed(2),
-      detailPotongan ? JSON.stringify(detailPotongan) : null,
+      detailPotonganToStore ? JSON.stringify(detailPotonganToStore) : null,
       totalPotongan.toFixed(2),
       nominalDitagih.toFixed(2),
       jenisTagihan,
