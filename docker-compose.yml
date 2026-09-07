@@ -20,7 +20,8 @@ services:
 
 networks:
   traefik-proxy:
+    name: traefik-proxy
     external: true
   database:
-    name: mariadb_database
+    name: mariadb-database
     external: true
