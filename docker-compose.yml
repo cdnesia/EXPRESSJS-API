@@ -8,26 +8,18 @@ services:
     environment:
       NODE_ENV: production
     networks:
-      - proxy
+      - traefik-proxy
       - database
     labels:
-      - traefik.enable=true
-      - traefik.docker.network=proxy
-
-      # Ganti api.domain-kamu.com dengan domain asli sebelum deploy.
-      - traefik.http.routers.expressjs-api.rule=Host(`api.umjambi.ac.id`)
-      - traefik.http.routers.expressjs-api.entrypoints=websecure
-      - traefik.http.routers.expressjs-api.tls.certresolver=letsencrypt
-      - traefik.http.services.expressjs-api.loadbalancer.server.port=3000
-
-      # Redirect http -> https, biar tidak ada yang akses versi plain http.
-      - traefik.http.routers.expressjs-api-http.rule=Host(`api.umjambi.ac.id`)
-      - traefik.http.routers.expressjs-api-http.entrypoints=web
-      - traefik.http.routers.expressjs-api-http.middlewares=expressjs-api-https-redirect
-      - traefik.http.middlewares.expressjs-api-https-redirect.redirectscheme.scheme=https
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-proxy"
+      - "traefik.http.routers.expressjs-api.rule=Host(`api.umjambi.ac.id`)"
+      - "traefik.http.routers.expressjs-api.entrypoints=websecure"
+      - "traefik.http.routers.expressjs-api.tls=true"
+      - "traefik.http.services.expressjs-api.loadbalancer.server.port=3000"
 
 networks:
-  proxy:
+  traefik-proxy:
     external: true
   database:
     name: mariadb_database
