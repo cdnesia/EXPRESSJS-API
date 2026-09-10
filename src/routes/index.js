@@ -5,6 +5,7 @@ const telegramRoutes = require('./telegram.routes');
 const pegawaiRoutes = require('./pegawai.routes');
 const bipotRoutes = require('./bipot.routes');
 const khsRoutes = require('./khs.routes');
+const krsRoutes = require('./krs.routes');
 const ruanganRoutes = require('./ruangan.routes');
 const jadwalRoutes = require('./jadwal.routes');
 const prisma = require('../config/prisma');
@@ -44,6 +45,7 @@ router.use('/telegram', telegramRoutes);
 router.use('/pegawai', pegawaiRoutes);
 router.use('/bipot', bipotRoutes);
 router.use('/khs', khsRoutes);
+router.use('/krs', krsRoutes);
 router.use('/ruangan', ruanganRoutes);
 router.use('/jadwal', jadwalRoutes);
 

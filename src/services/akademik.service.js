@@ -131,4 +131,50 @@ async function getKhs(npm, periode) {
   };
 }
 
-module.exports = { getStudent, getKhs };
+// KRS satu periode: daftar mata kuliah yang diambil + jadwalnya (hari, jam),
+// beda dari KHS yang fokusnya nilai — jadwal ikut jadwal_id yang sama
+// seperti queryKrs(), plus join master_hari untuk nama harinya.
+async function queryJadwalKrs(pool, npm, periode) {
+  const [rows] = await pool.query(
+    `SELECT
+       COALESCE(mkJadwal.kode_mata_kuliah, mkDirect.kode_mata_kuliah, '') AS kodeMataKuliah,
+       COALESCE(mkJadwal.nama_mata_kuliah_idn, mkDirect.nama_mata_kuliah_idn, '') AS namaMataKuliah,
+       COALESCE(mkJadwal.sks_mata_kuliah, mkDirect.sks_mata_kuliah, 0) AS sksMataKuliah,
+       h.nama_hari AS namaHari,
+       j.jam_mulai AS jamMulai,
+       j.jam_selesai AS jamSelesai
+     FROM tbl_mahasiswa_krs k
+     LEFT JOIN tbl_jadwal_perkuliahan j ON j.id = k.jadwal_id
+     LEFT JOIN master_hari h ON h.id = j.hari_id
+     LEFT JOIN master_kurikulum_matakuliah mkJadwal ON mkJadwal.id = j.mata_kuliah_id
+     LEFT JOIN master_kurikulum_matakuliah mkDirect ON mkDirect.id = k.mata_kuliah_id
+     WHERE k.npm = ? AND k.kode_tahun_akademik = ?
+     ORDER BY j.hari_id, j.jam_mulai`,
+    [npm, periode]
+  );
+
+  return rows;
+}
+
+async function getKrs(npm, periode) {
+  const pool = getPool('SIADE');
+
+  const [mhsRows] = await pool.query('SELECT id FROM master_mahasiswa WHERE npm = ? LIMIT 1', [npm]);
+
+  if (mhsRows.length === 0) {
+    throw new AppError(404, 'Data mahasiswa tidak ditemukan.');
+  }
+
+  const items = await queryJadwalKrs(pool, npm, periode);
+
+  return items.map((item) => ({
+    kodeMataKuliah: item.kodeMataKuliah,
+    namaMataKuliah: item.namaMataKuliah,
+    sksMataKuliah: Number(item.sksMataKuliah) || 0,
+    namaHari: item.namaHari || '',
+    jamMulai: item.jamMulai || '',
+    jamSelesai: item.jamSelesai || '',
+  }));
+}
+
+module.exports = { getStudent, getKhs, getKrs };
